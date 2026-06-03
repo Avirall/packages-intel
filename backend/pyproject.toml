@@ -1,0 +1,49 @@
+[project]
+name = "oss-sentinel-backend"
+version = "0.1.0"
+requires-python = ">=3.12"
+
+dependencies = [
+    # Web framework
+    "fastapi>=0.115.0",
+    "uvicorn[standard]>=0.30.0",
+    "python-multipart>=0.0.9",      # file uploads
+
+    # Auth
+    "python-jose[cryptography]>=3.3.0",
+    "passlib[bcrypt]>=1.7.4",
+
+    # MongoDB
+    "motor>=3.5.0",                 # async MongoDB driver
+    "beanie>=1.26.0",               # ODM on top of motor
+
+    # Neo4j
+    "neo4j>=5.20.0",
+
+    # HTTP client
+    "httpx>=0.27.0",
+
+    # Parsing
+    "tomli>=2.0.1",                 # TOML (uv.lock, pyproject, Cargo.toml)
+    "pyyaml>=6.0.1",                # YAML (pnpm-lock.yaml)
+
+    # Config
+    "pydantic-settings>=2.3.0",
+
+    # Utilities
+    "anyio>=4.4.0",
+]
+
+[project.optional-dependencies]
+dev = [
+    "pytest>=8.2.0",
+    "pytest-asyncio>=0.23.0",
+    "httpx>=0.27.0",
+]
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[tool.pytest.ini_options]
+asyncio_mode = "auto"
