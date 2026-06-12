@@ -1,9 +1,47 @@
 "use client"
 
-import { Package, AlertTriangle, ShieldCheck, Users } from "lucide-react"
-import { Card, CardContent } from "@/components/ui/card"
+import { Package, AlertTriangle, ShieldAlert, Users } from "lucide-react"
 import { Skeleton } from "@/components/ui/skeleton"
 import { useScan } from "@/hooks/useScan"
+
+const CARDS = [
+  {
+    key: "total",
+    label: "Total packages",
+    icon: Package,
+    iconBg: "bg-teal-50",
+    iconColor: "text-teal-600",
+    accent: "border-l-teal-400",
+    valueKey: (s: { total_packages: number; high_risk: number; medium_risk: number; avg_bus_factor: number }) => s.total_packages,
+  },
+  {
+    key: "high",
+    label: "High risk",
+    icon: AlertTriangle,
+    iconBg: "bg-red-50",
+    iconColor: "text-red-600",
+    accent: "border-l-red-400",
+    valueKey: (s: { total_packages: number; high_risk: number; medium_risk: number; avg_bus_factor: number }) => s.high_risk,
+  },
+  {
+    key: "medium",
+    label: "Medium risk",
+    icon: ShieldAlert,
+    iconBg: "bg-amber-50",
+    iconColor: "text-amber-600",
+    accent: "border-l-amber-400",
+    valueKey: (s: { total_packages: number; high_risk: number; medium_risk: number; avg_bus_factor: number }) => s.medium_risk,
+  },
+  {
+    key: "bus",
+    label: "Avg bus factor",
+    icon: Users,
+    iconBg: "bg-green-50",
+    iconColor: "text-green-700",
+    accent: "border-l-green-400",
+    valueKey: (s: { total_packages: number; high_risk: number; medium_risk: number; avg_bus_factor: number }) => s.avg_bus_factor.toFixed(1),
+  },
+]
 
 export function SummaryCards({ scanId }: { scanId: string }) {
   const { scan, loading } = useScan(scanId)
@@ -11,34 +49,27 @@ export function SummaryCards({ scanId }: { scanId: string }) {
   if (loading) {
     return (
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
-        {[...Array(4)].map((_, i) => <Skeleton key={i} className="h-24 w-full" />)}
+        {[...Array(4)].map((_, i) => <Skeleton key={i} className="h-24 w-full rounded-2xl" />)}
       </div>
     )
   }
-
   if (!scan) return null
-
-  const cards = [
-    { label: "Total packages",  value: scan.summary.total_packages, icon: Package,       color: "text-primary" },
-    { label: "High risk",       value: scan.summary.high_risk,      icon: AlertTriangle,  color: "text-red-400" },
-    { label: "Medium risk",     value: scan.summary.medium_risk,    icon: ShieldCheck,    color: "text-amber-400" },
-    { label: "Avg bus factor",  value: scan.summary.avg_bus_factor.toFixed(1), icon: Users, color: "text-green-400" },
-  ]
 
   return (
     <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
-      {cards.map(({ label, value, icon: Icon, color }) => (
-        <Card key={label}>
-          <CardContent className="pt-5 pb-4">
-            <div className="flex items-start justify-between">
-              <div>
-                <p className="text-muted-foreground text-xs">{label}</p>
-                <p className="text-2xl font-bold mt-1">{value}</p>
-              </div>
-              <Icon className={`h-5 w-5 ${color} opacity-80`} />
+      {CARDS.map(({ key, label, icon: Icon, iconBg, iconColor, accent, valueKey }) => (
+        <div
+          key={key}
+          className={`rounded-2xl border border-gray-100 bg-white p-5 shadow-sm border-l-4 ${accent}`}
+        >
+          <div className="flex items-start justify-between mb-3">
+            <p className="text-xs font-medium text-gray-500 uppercase tracking-wide">{label}</p>
+            <div className={`h-8 w-8 rounded-lg flex items-center justify-center shrink-0 ${iconBg}`}>
+              <Icon className={`h-4 w-4 ${iconColor}`} />
             </div>
-          </CardContent>
-        </Card>
+          </div>
+          <p className="text-3xl font-bold text-gray-900 tabular-nums">{valueKey(scan.summary)}</p>
+        </div>
       ))}
     </div>
   )

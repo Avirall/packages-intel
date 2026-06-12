@@ -2,6 +2,7 @@ from fastapi import Depends, HTTPException, status
 from fastapi.security import HTTPAuthorizationCredentials, HTTPBearer
 from jose import JWTError
 from bson import ObjectId
+from bson.errors import InvalidId
 
 from app.core.security import decode_token
 from app.db.mongodb import users_collection
@@ -27,8 +28,16 @@ async def get_current_user(
             detail="Expected access token",
         )
 
-    user_id = payload.get("sub")
-    user = await users_collection().find_one({"_id": ObjectId(user_id)})
+    user_id = payload.get("sub", "")
+    try:
+        oid = ObjectId(user_id)
+    except (InvalidId, Exception):
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Invalid token subject",
+        )
+
+    user = await users_collection().find_one({"_id": oid})
     if not user:
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,

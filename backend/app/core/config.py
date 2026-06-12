@@ -1,3 +1,4 @@
+from pydantic import field_validator
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
 
@@ -37,6 +38,27 @@ class Settings(BaseSettings):
 
     # CORS
     allowed_origins: str = "http://localhost:3000"
+
+    # Upload
+    max_upload_bytes: int = 512 * 1024  # 512 KB
+
+    @field_validator("secret_key")
+    @classmethod
+    def secret_key_not_empty(cls, v: str) -> str:
+        if not v or len(v) < 32:
+            raise ValueError("SECRET_KEY must be at least 32 characters")
+        return v
+
+    @field_validator("neo4j_password", "aura_client_secret", "github_token")
+    @classmethod
+    def required_secret_not_empty(cls, v: str) -> str:
+        if not v:
+            raise ValueError("Required secret must not be empty")
+        return v
+
+    @property
+    def is_production(self) -> bool:
+        return self.app_env == "production"
 
     @property
     def allowed_origins_list(self) -> list[str]:

@@ -11,7 +11,7 @@ dependencies = [
 
     # Auth
     "python-jose[cryptography]>=3.3.0",
-    "passlib[bcrypt]>=1.7.4",
+    "bcrypt>=4.0.0",
 
     # MongoDB
     "motor>=3.5.0",                 # async MongoDB driver
@@ -29,9 +29,11 @@ dependencies = [
 
     # Config
     "pydantic-settings>=2.3.0",
+    "pydantic[email]>=2.0.0",
 
     # Utilities
     "anyio>=4.4.0",
+    "python-dotenv>=1.0.0",           # seed scripts + local dev
 ]
 
 [project.optional-dependencies]
@@ -40,6 +42,9 @@ dev = [
     "pytest-asyncio>=0.23.0",
     "httpx>=0.27.0",
 ]
+
+[tool.hatch.build.targets.wheel]
+packages = ["app"]
 
 [build-system]
 requires = ["hatchling"]

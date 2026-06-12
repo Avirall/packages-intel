@@ -35,37 +35,110 @@
 
 :root {
   --radius: 0.625rem;
-  --background: oklch(0.08 0.01 240);
-  --foreground: oklch(0.95 0.01 240);
-  --card: oklch(0.12 0.01 240);
-  --card-foreground: oklch(0.95 0.01 240);
-  --popover: oklch(0.12 0.01 240);
-  --popover-foreground: oklch(0.95 0.01 240);
-  --primary: oklch(0.6 0.2 250);
-  --primary-foreground: oklch(0.98 0 0);
-  --secondary: oklch(0.18 0.01 240);
-  --secondary-foreground: oklch(0.95 0.01 240);
-  --muted: oklch(0.18 0.01 240);
-  --muted-foreground: oklch(0.6 0.01 240);
-  --accent: oklch(0.18 0.01 240);
-  --accent-foreground: oklch(0.95 0.01 240);
-  --destructive: oklch(0.55 0.22 25);
-  --border: oklch(0.22 0.01 240);
-  --input: oklch(0.22 0.01 240);
-  --ring: oklch(0.6 0.2 250);
-  --chart-1: oklch(0.55 0.22 25);   /* red — HIGH risk */
-  --chart-2: oklch(0.7 0.18 70);    /* amber — MEDIUM risk */
-  --chart-3: oklch(0.65 0.18 145);  /* green — LOW risk */
-  --chart-4: oklch(0.6 0.2 250);    /* blue */
-  --chart-5: oklch(0.65 0.2 290);   /* purple */
+
+  /* ── Light mode ────────────────────────────────────────────────────── */
+  --background:         oklch(0.985 0.006 168);   /* near-white, faint teal */
+  --foreground:         oklch(0.10  0.02  200);    /* near-black             */
+  --card:               oklch(1.0   0     0);      /* pure white             */
+  --card-foreground:    oklch(0.10  0.02  200);
+  --popover:            oklch(1.0   0     0);
+  --popover-foreground: oklch(0.10  0.02  200);
+  --primary:            oklch(0.52  0.18  178);    /* teal-600               */
+  --primary-foreground: oklch(0.99  0     0);      /* white                  */
+  --secondary:          oklch(0.94  0.01  168);
+  --secondary-foreground: oklch(0.20 0.02 200);
+  --muted:              oklch(0.94  0.01  168);
+  --muted-foreground:   oklch(0.50  0.01  200);
+  --accent:             oklch(0.94  0.01  168);
+  --accent-foreground:  oklch(0.20  0.02  200);
+  --destructive:        oklch(0.55  0.22  25);
+  --border:             oklch(0.88  0.02  168);    /* light teal border      */
+  --input:              oklch(0.92  0.015 168);
+  --ring:               oklch(0.52  0.18  178);
+
+  /* ── Chart / risk colours ─────────────────────────────────────────── */
+  --chart-1: oklch(0.55 0.22 25);    /* red   — HIGH risk  */
+  --chart-2: oklch(0.65 0.18 70);    /* amber — MEDIUM     */
+  --chart-3: oklch(0.55 0.18 145);   /* green — LOW        */
+  --chart-4: oklch(0.52 0.18 178);   /* teal               */
+  --chart-5: oklch(0.55 0.18 215);   /* cyan-blue          */
 }
 
-* {
-  border-color: var(--border);
-}
+* { border-color: var(--border); }
 
 body {
   background-color: var(--background);
   color: var(--foreground);
   font-family: var(--font-geist-sans), system-ui, sans-serif;
 }
+
+/* ── Dot grid ────────────────────────────────────────────────────────────── */
+.dot-grid {
+  background-image: radial-gradient(circle, rgba(13,148,136,0.09) 1px, transparent 1px);
+  background-size: 28px 28px;
+}
+
+/* ── Graph node pulse ────────────────────────────────────────────────────── */
+@keyframes graph-node-pulse {
+  0%, 100% { opacity: 0.5;  }
+  50%       { opacity: 0.85; }
+}
+.graph-node { animation: graph-node-pulse 3.5s ease-in-out infinite; }
+
+/* ── Graph edge flow ─────────────────────────────────────────────────────── */
+@keyframes graph-edge-flow { to { stroke-dashoffset: -20; } }
+.graph-edge { animation: graph-edge-flow 2.5s linear infinite; }
+
+/* ── Risk node warning pulse ─────────────────────────────────────────────── */
+@keyframes risk-pulse {
+  0%, 100% { opacity: 0.4; r: 0; }
+  50%       { opacity: 0;   r: 8; }
+}
+.risk-ring { animation: risk-pulse 2s ease-out infinite; }
+
+/* ── Orb glow ────────────────────────────────────────────────────────────── */
+@keyframes orb-pulse {
+  0%, 100% { opacity: 0.6; transform: scale(1);    }
+  50%       { opacity: 1;   transform: scale(1.04); }
+}
+.orb-animate { animation: orb-pulse 8s ease-in-out infinite; }
+
+/* ── Glow text (subtle in light mode) ───────────────────────────────────── */
+.text-glow { text-shadow: 0 0 32px oklch(0.52 0.18 178 / 0.18); }
+
+/* ── Card glow on hover ──────────────────────────────────────────────────── */
+.card-glow { transition: box-shadow 0.3s ease, border-color 0.3s ease; }
+.card-glow:hover {
+  box-shadow: 0 0 0 1px oklch(0.52 0.18 178 / 0.2), 0 8px 28px oklch(0.52 0.18 178 / 0.08);
+  border-color: oklch(0.52 0.18 178 / 0.3);
+}
+
+/* ── Auth card top accent line ───────────────────────────────────────────── */
+.top-glow-line::before {
+  content: "";
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 2px;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    oklch(0.52 0.18 178 / 0.5) 35%,
+    oklch(0.64 0.18 178 / 0.7) 50%,
+    oklch(0.52 0.18 178 / 0.5) 65%,
+    transparent
+  );
+}
+
+/* ── Scroll bounce ───────────────────────────────────────────────────────── */
+@keyframes scroll-bounce {
+  0%, 100% { transform: translateY(0);   opacity: 0.4; }
+  50%       { transform: translateY(5px); opacity: 0.8; }
+}
+.scroll-bounce { animation: scroll-bounce 2s ease-in-out infinite; }
+
+/* ── Panel float animation ───────────────────────────────────────────────── */
+@keyframes panel-float {
+  0%, 100% { transform: translateY(0px); }
+  50%       { transform: translateY(-8px); }
+}
+.panel-float { animation: panel-float 6s ease-in-out infinite; }
